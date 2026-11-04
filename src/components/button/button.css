@@ -1,0 +1,118 @@
+/* =========================================
+   KINEX Button v1.0
+========================================= */
+
+.kinex-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    height: 36px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 8px;
+
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================
+   Primary
+========================================= */
+
+.kinex-primary {
+    background: #30D158;
+    color: #050506;
+}
+
+.kinex-primary:hover {
+    background: #45E26D;
+    transform: translateY(-2px);
+}
+
+.kinex-primary:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   Secondary
+========================================= */
+
+.kinex-secondary {
+    background: transparent;
+    color: #F5F5F7;
+    border: 1px solid #26262C;
+}
+
+.kinex-secondary:hover {
+    background: #16161A;
+    border-color: #30D158;
+    transform: translateY(-2px);
+}
+
+.kinex-secondary:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   Glow
+========================================= */
+
+.kinex-glow {
+    background: #30D158;
+    color: #050506;
+
+    box-shadow:
+        0 0 12px rgba(48, 209, 88, 0.35);
+}
+
+.kinex-glow:hover {
+    background: #45E26D;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 24px rgba(48, 209, 88, 0.55);
+}
+
+.kinex-glow:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   Disabled
+========================================= */
+
+.kinex-disabled {
+    background: #26262C;
+    color: #8E8E93;
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    pointer-events: none;
+}
+
+.kinex-disabled:hover {
+    transform: none;
+    box-shadow: none;
+}

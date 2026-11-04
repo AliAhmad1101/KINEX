@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>KINEX Button Test</title>
+
+    <link rel="stylesheet" href="./components/button/button.css">
+
+    <style>
+        body {
+            background: #050506;
+            font-family: Inter, sans-serif;
+            padding: 40px;
+
+            display: flex;
+            gap: 20px;
+
+            align-items: center;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+
+
+<button id="primary">
+    Documentation
+</button>
+
+<button id="secondary">
+    Explore Library
+</button>
+
+<button id="disabled">
+    Coming Soon
+</button>
+
+
+
+<script type="module">
+
+import { Button } from "./components/button/index.js";
+
+
+Button("#primary", {
+    variant:"primary"
+});
+
+
+Button("#secondary", {
+    variant:"secondary"
+});
+
+
+Button("#disabled", {
+    variant:"disabled"
+});
+
+
+</script>
+
+
+</body>
+
+
+</html>
