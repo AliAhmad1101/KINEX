@@ -1,0 +1,165 @@
+.kinex-card {
+
+    display:flex;
+    flex-direction:column;
+
+    box-sizing:border-box;
+    width:320px;
+
+    background:#111111;
+
+    border:1px solid rgba(255,255,255,0.18);
+
+    border-radius:var(--radius-lg);
+
+    padding:var(--spacing-6);
+
+    gap:var(--spacing-4);
+
+    color:var(--text-primary);
+    font-family:Inter,system-ui,sans-serif;
+
+    transition:
+        transform var(--duration-normal) ease-out,
+        box-shadow var(--duration-normal) ease-out;
+
+}
+.kinex-card:hover {
+
+    transform:translateY(-4px);
+
+}
+.kinex-card__media {
+
+    width:100%;
+
+    overflow:hidden;
+
+    border-radius:var(--radius-md);
+
+}
+
+
+.kinex-card__media img {
+
+    width:100%;
+
+    display:block;
+
+}
+.kinex-card__title {
+
+    margin:0;
+
+    font-size:18px;
+
+    font-weight:600;
+    line-height:normal;
+
+    color:var(--text-primary);
+
+}
+.kinex-card__description {
+
+    margin:0;
+
+    font-size:14px;
+
+    line-height:normal;
+
+    color:#A0A0A0;
+
+}
+.kinex-card__action {
+
+    margin-top:var(--spacing-2);
+
+    padding:
+        var(--spacing-2)
+        var(--spacing-4);
+
+
+    background:var(--accent-primary);
+
+    color:#000;
+
+    border:none;
+
+    border-radius:var(--radius-md);
+
+    cursor:pointer;
+
+}
+.kinex-card--default .kinex-card__action {
+
+    align-self:flex-start;
+
+    margin-top:0;
+    padding:0;
+
+    background:transparent;
+
+    color:var(--accent-primary);
+
+    border:0;
+    border-radius:0;
+
+    font:500 14px/normal Inter,system-ui,sans-serif;
+    text-align:left;
+    appearance:none;
+
+}
+.kinex-card--default .kinex-card__action-arrow {
+
+    display:inline-block;
+
+    margin-inline-start:var(--spacing-2);
+
+    transition:transform var(--duration-fast) ease-out;
+
+}
+.kinex-card--default .kinex-card__action:hover .kinex-card__action-arrow,
+.kinex-card--default .kinex-card__action:focus-visible .kinex-card__action-arrow {
+
+    transform:translateX(3px);
+
+}
+@media (prefers-reduced-motion: reduce) {
+
+    .kinex-card--default .kinex-card__action-arrow {
+
+        transition:none;
+
+    }
+
+}
+.kinex-card--default {
+
+    background:#111111;
+
+    box-shadow:0 4px 4px rgba(0,0,0,0.25);
+
+}
+.kinex-card--outlined {
+
+    background:transparent;
+
+    border:
+    1px solid var(--border-default);
+
+}
+.kinex-card--elevated {
+
+    box-shadow:var(--shadow-2);
+
+}
+.kinex-card--glass {
+
+    background:var(--surface-glass);
+
+    backdrop-filter:blur(16px);
+
+    border:
+    1px solid rgba(255,255,255,0.1);
+
+}

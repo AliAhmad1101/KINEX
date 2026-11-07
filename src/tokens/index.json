@@ -1,0 +1,17 @@
+{
+  "tokens": {
+
+    "colors": "./colors.json",
+
+    "spacing": "./spacing.json",
+
+    "radius": "./radius.json",
+
+    "typography": "./typography.json",
+
+    "shadows": "./shadows.json",
+
+    "motion": "./motion.json"
+
+  }
+}
