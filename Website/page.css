@@ -1,0 +1,21 @@
+/* Shared by every KINEX page: tokens, base, navbar, buttons */
+@font-face{font-family:Neverquit;src:url(fonts/Neverquit.ttf);font-display:swap}
+:root{--bg:#050506;--ac:#30D158;--sf:#151519;--tx:#F5F5F7;--bd:#26262C;--main:Neverquit,'Arial Black',sans-serif;--sec:Manrope,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;scrollbar-width:thin;scrollbar-color:#333 transparent}
+body{background:var(--bg);color:var(--tx);font:400 1rem/1.5 var(--sec)}
+a,button{color:inherit;font:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+header{position:relative;z-index:60;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:var(--bg);border-bottom:1px solid var(--bd)}
+.crumb{display:flex;align-items:center;gap:.8rem}
+.crumb>span{font-size:1.4rem;color:#444}
+.crumb b{font:700 1.05rem var(--sec)}
+.brand{display:flex;align-items:center;gap:.7rem;font:400 1.5rem/1 var(--main)}
+.brand img{height:2rem;filter:brightness(0) invert(1);transition:transform .7s cubic-bezier(.2,1.4,.3,1)}
+.brand:hover img{transform:rotate(180deg) scale(1.15)}
+.brand i{font-style:normal;color:var(--ac)}
+header nav{display:flex;gap:.6rem}
+.btn{cursor:pointer;background:linear-gradient(var(--ac),var(--ac)) no-repeat 0 0/0 100%;border:1px solid var(--bd);border-radius:8px;padding:.35rem .9rem;font-size:.88rem;transition:background-size .4s cubic-bezier(.7,0,.2,1),color .4s,border-color .4s}
+.btn:hover,.btn:focus-visible,.btn.on{background-size:100% 100%;color:var(--bg);border-color:var(--ac)}
+.btn b{display:inline-block;margin-left:.4rem;font-weight:400;transition:transform .35s}
+.btn.on b{transform:rotate(45deg)}
+@media(prefers-reduced-motion){*{transition-duration:.01s!important}}
