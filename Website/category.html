@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Components | KINEX.js</title>
+<meta name="description" content="Browse KINEX.js components, customize them live and copy the code.">
+<link rel="shortcut icon" href="logo.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="page.css">
+<style>
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* intro */
+.hero{padding:3.2rem 1.5rem 2rem;background:radial-gradient(60% 90% at 15% 0,#30D15818,transparent)}
+.eyebrow{font:700 .75rem var(--sec);letter-spacing:.14em;text-transform:uppercase;color:var(--ac)}
+.hero h1{margin:.5rem 0 .8rem;font:400 clamp(3rem,8vw,6.5rem)/1 var(--main)}
+.sub{max-width:40rem;color:#a6a6a6}.sub b{color:var(--tx)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.6rem}
+.chips a{padding:.3rem .9rem;border:1px solid var(--bd);border-radius:99px;font-size:.85rem;color:#a6a6a6;transition:color .25s,border-color .25s,background .25s}
+.chips a:hover{color:var(--tx);border-color:var(--ac)}
+.chips a[aria-current]{background:var(--ac);border-color:var(--ac);color:var(--bg);font-weight:700}
+
+/* bordered tiles with space between them, three per row */
+main{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;align-content:start;padding:0 1.5rem 3rem;counter-reset:c}
+.cell,.soon{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:1.4rem;padding:2.4rem 1.2rem 1rem;border:1px solid var(--ac)}
+.cell{transition:background .3s,box-shadow .3s;animation:up .6s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*90ms)}
+.cell:hover{background:#08110b;box-shadow:0 0 0 1px var(--ac),0 0 44px #30D15822}
+.cell::before,.cell::after{position:absolute;top:.8rem;font-size:.72rem;color:var(--ac)}
+.cell::before{counter-increment:c;content:counter(c,decimal-leading-zero);left:1rem}
+.cell::after{content:'Try me';right:1rem;padding-left:.9rem;background:radial-gradient(circle,var(--ac) 3px,transparent 4px) 0 50%/8px 8px no-repeat}
+.live{display:grid;place-items:center;min-height:238px}
+.cell .live>*{--kx-w:170px} /* previews are shown smaller than real size */
+.meta{display:flex;justify-content:space-between;align-items:center;gap:1rem;width:100%;padding-top:.8rem;border-top:1px solid #30D15833}
+.meta small{display:block;max-width:15rem;color:#8a8a94;font-size:.78rem;line-height:1.4}
+.soon{justify-content:center;border-style:dashed;border-color:#30D15844;color:#6b6b73;font-size:.9rem}
+.soon b{font-size:2rem;font-weight:200;color:#30D15888}
+.empty{grid-column:1/-1;display:grid;justify-items:center;gap:.8rem;padding:5rem 1rem;border:1px dashed #30D15855;text-align:center}
+.empty h2{font:400 2rem var(--main)}.empty p{color:#a6a6a6}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}
+
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;margin-top:auto;padding:1.4rem 1.5rem;border-top:1px solid var(--bd);color:#8a8a94;font-size:.85rem}
+.foot nav{display:flex;gap:1.4rem}.foot a:hover{color:var(--ac)}
+
+@media(max-width:1000px){main{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="crumb">
+    <a class="brand" href="index.html"><img src="logo.svg" alt="">KINEX<i>.js</i></a>
+    <span>/</span><b id="name"></b>
+  </div>
+  <nav aria-label="Main">
+    <a class="btn" href="index.html">Home</a>
+    <button class="btn" onclick="history.back()">Back</button>
+    <button class="btn" id="cat" aria-expanded="false"><span>Categories</span><b>+</b></button>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">KINEX.js components</p>
+  <h1 id="title"></h1>
+  <p class="sub" id="lead"></p>
+  <nav class="chips" id="chips" aria-label="Categories"></nav>
+</section>
+
+<main id="grid"></main>
+
+<footer class="foot">
+  <span>&copy; <span id="yr"></span> KINEX.js. All rights reserved.</span>
+  <nav><a href="index.html">Home</a><a href="documentation.html">Documentation</a><a href="https://github.com/">GitHub</a></nav>
+</footer>
+
+<script src="registry.js"></script>
+<script src="menu.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const q = new URLSearchParams(location.search).get('c') || 'cards';
+  const tabs = [['Featured', 'featured'], ...CATEGORIES.map(c => [c, kxSlug(c)]), ['All', 'all']];
+  const label = (q === 'all' ? 'All components' : (tabs.find(t => t[1] === q) || [q])[0]);
+  const list = Object.entries(COMPONENTS).filter(([, c]) => q === 'all' || (q === 'featured' ? c.featured : kxSlug(c.cat) === q));
+  const n = list.length;
+
+  document.title = `${label} | KINEX.js`;
+  $('name').textContent = $('title').textContent = label;
+  $('yr').textContent = new Date().getFullYear();
+  $('lead').innerHTML = n ? `<b>${n}</b> component${n === 1 ? '' : 's'}. Hover or click to try them, press Customize to tune the colours, then paste two lines into your page.`
+    : 'Nothing has been published here yet.';
+  $('chips').innerHTML = tabs.map(([t, s]) => `<a href="category.html?c=${s}"${s === q ? ' aria-current="page"' : ''}>${t}</a>`).join('');
+
+  // live components drawn from each one's own css/html/on, no kinex.js needed
+  document.head.insertAdjacentHTML('beforeend', `<style>${list.map(([, c]) => c.css).join('\n')}</style>`);
+  $('grid').innerHTML = n
+    ? list.map(([id, c], i) => `<div class="cell" style="--i:${i}"><div class="live">${c.html}</div><div class="meta"><div><b>${c.name}</b><small>${c.desc || ''}</small></div><a class="btn" href="${kxPage(id)}">Customize &rarr;</a></div></div>`).join('')
+      + '<div class="soon"><b>+</b>More coming soon</div>'.repeat((3 - n % 3) % 3)
+    : `<div class="empty"><h2>Coming soon</h2><p>We are still building ${label} components.</p><a class="btn" href="category.html?c=all">Browse all components</a></div>`;
+  $('grid').querySelectorAll('.live').forEach((el, i) => list[i][1].on?.(el.firstElementChild));
+})();
+</script>
+</body>
+</html>

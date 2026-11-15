@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KINEX.js</title>
+<link rel="shortcut icon" href="logo.svg" type="image/svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;400;500;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:Neverquit;src:url(fonts/Neverquit.ttf);font-display:swap}
+:root{--bg:#050506;--ac:#30D158;--sf:#151519;--tx:#F5F5F7;--bd:#26262C;--main:Neverquit,'Arial Black',sans-serif;--sec:Manrope,system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--tx);font:400 1rem/1.5 var(--sec);overflow-x:hidden}
+body:not(.ready){overflow:hidden}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ac);outline-offset:3px}
+
+/* loader */
+#loader{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;transition:opacity .9s}
+#loader.done{opacity:0;pointer-events:none}
+#loader h1{font:clamp(4rem,19vw,17rem)/1 var(--main);letter-spacing:.02em;display:flex}
+#loader span{color:var(--bg);-webkit-text-stroke:2px var(--ac);transition:color .35s,text-shadow .35s}
+#loader span.on{color:var(--ac);text-shadow:0 0 40px #30D15855}
+
+/* shared hover wipe */
+.wipe{display:block;width:fit-content;background:linear-gradient(var(--w),var(--w)) no-repeat 0 0/0 100%;transition:background-size .45s cubic-bezier(.7,0,.2,1),color .45s;padding:0 .12em;margin-left:-.12em}
+.wipe:hover{background-size:100% 100%;color:var(--t)}
+h2{font:400 clamp(2.6rem,6.4vw,6.5rem)/1.05 var(--main)}
+
+/* hero */
+#hero{min-height:100vh;display:grid;grid-template-columns:auto minmax(0,1fr);position:relative}
+.brand{position:absolute;top:2rem;left:6vw;z-index:5;display:flex;align-items:center;gap:.8rem;font:1.7rem/1 var(--main)}
+.brand img{height:2.4rem;filter:brightness(0) invert(1);transition:transform .7s cubic-bezier(.2,1.4,.3,1)}
+.brand b{font-weight:400;transition:letter-spacing .4s}
+.brand i{font-style:normal;color:var(--ac);display:inline-block;transition:transform .4s}
+.brand:hover img{transform:rotate(180deg) scale(1.2)}
+.brand:hover b{letter-spacing:.12em}
+.brand:hover i{transform:translateY(-.25em) rotate(-8deg)}
+nav{position:relative;z-index:2;align-self:center;padding-left:6vw;padding-right:2vw;display:flex;flex-direction:column;gap:.4rem;overflow:hidden;padding-block:2rem}
+nav a{position:relative;width:fit-content;font:clamp(1.1rem,5vw,3.1rem)/1.1 var(--main);padding:.1em .6em .1em 1em;isolation:isolate;transform:translateX(-120vw)}
+.ready nav a{animation:in 1s cubic-bezier(.2,.9,.2,1) calc(var(--i)*.12s + .2s) both;transform:none}
+@keyframes in{from{transform:translateX(-120vw)}}
+nav a::before{content:'';position:absolute;inset:0;z-index:-1;background:var(--ac);transform:skewX(-14deg) scaleX(0);transform-origin:left;transition:transform .35s cubic-bezier(.7,0,.2,1)}
+nav a::after{content:'';position:absolute;left:.25em;top:50%;width:.4em;height:.45em;background:var(--bg);clip-path:polygon(0 0,100% 50%,0 100%);transform:translateY(-50%) scale(0);transition:transform .3s .1s}
+nav a span{display:block;transition:transform .35s,letter-spacing .35s,color .2s}
+nav a:hover::before,nav a:focus-visible::before{transform:skewX(-14deg) scaleX(1)}
+nav a:hover::after,nav a:focus-visible::after{transform:translateY(-50%) scale(1)}
+nav a:hover span,nav a:focus-visible span{transform:translateX(.3em);letter-spacing:.06em;color:var(--bg)}
+nav a:not(:hover):not(:focus-visible):is(nav:hover a){opacity:.45}
+#iso{width:100%;height:100%;min-height:60vh}
+
+/* how to use */
+#how{background:var(--ac);color:var(--bg);height:320vh;--w:var(--bg);--t:var(--ac)}
+.pin{position:sticky;top:0;height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4vw;padding:0 6vw}
+.pin>h2{position:absolute;top:2.2rem;left:6vw}
+.pin h3{font:400 clamp(2.4rem,5.4vw,5.6rem)/1.1 var(--main);padding-top:5rem}
+.w{display:inline-block;margin:0 .08em;opacity:0;transform:translateY(.5em);transition:opacity .6s,transform .6s,background-size .45s cubic-bezier(.7,0,.2,1),color .45s}
+.w.show{opacity:1;transform:none}
+.cards{display:flex;flex-direction:column;gap:1.6rem;padding-top:4rem}
+.card{background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:14px;width:86%;overflow:hidden;box-shadow:0 24px 50px #0006}
+.card:nth-child(2){align-self:flex-end}
+.card header{display:flex;justify-content:space-between;align-items:center;padding:.8rem 1rem;border-bottom:1px solid var(--bd);font-weight:700}
+.card button{font:500 .85rem var(--sec);background:none;color:var(--ac);border:1px solid var(--ac);border-radius:6px;padding:.25rem .8rem;cursor:pointer;transition:background .2s,color .2s}
+.card button:hover{background:var(--ac);color:var(--bg)}
+pre{padding:1.1rem;font:.85rem/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all;color:#cfcfd4}
+pre b{color:var(--ac);font-weight:400}
+
+/* browse */
+#browse{height:100vh;display:grid;grid-template-columns:1fr 1fr;--w:var(--ac);--t:var(--bg)}
+.ow{position:relative;height:100%;overflow:hidden;cursor:grab;user-select:none;touch-action:none;outline:none;border-right:1px solid var(--bd)}
+.ow.drag{cursor:grabbing}
+.ow:focus-visible{box-shadow:inset 0 0 0 2px var(--ac)}
+.ow-item{position:absolute;top:50%;left:60px;white-space:nowrap;font:200 clamp(2rem,3.4vw,3.2rem)/1 var(--sec);transform-origin:left center;cursor:pointer;will-change:transform,opacity,filter;color:color-mix(in srgb,var(--ac) calc(var(--p,0)*100%),#a6a6a6)}
+.ow-item.sel{font-weight:500}
+.right{align-self:center;padding:0 6vw}
+#sel{margin-top:1.5rem;color:#a6a6a6}
+
+@media(max-width:800px){
+ #hero,#browse,.pin{grid-template-columns:1fr}
+ #hero{padding-top:6rem}#iso{min-height:45vh}
+ nav{padding-block:1rem}
+ #how{height:auto}.pin{position:relative;height:auto;padding:6rem 6vw 4rem}.pin>h2{top:1.5rem}.w{opacity:1;transform:none}.card{width:100%}
+ #browse{height:auto}.ow{height:70vh;border:0}.right{padding:3rem 6vw;order:-1}
+}
+/* features grid */
+#features{position:relative;height:100vh;background:#000;overflow:hidden}
+.gm{position:absolute;inset:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#0000,#000 14%,#000 86%,#0000),linear-gradient(#0000,#000 20%,#000 80%,#0000);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,#0000,#000 14%,#000 86%,#0000),linear-gradient(#0000,#000 20%,#000 80%,#0000);mask-composite:intersect}
+.gm-plane{position:absolute;top:50%;left:50%}
+.gm-row{position:absolute;left:0;display:flex;gap:var(--g);will-change:transform}
+.tile{position:relative;flex:none;width:var(--tw);height:var(--th);display:flex;flex-direction:column;padding:1rem;background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden;opacity:calc(1 - .35*(1 - var(--s,0)));transition:border-color .25s}
+.tile:hover,.tile:focus-visible{border-color:var(--ac);opacity:1}
+.tile b{margin:auto;font:400 var(--f)/1.1 var(--main);text-align:center;transition:color .25s}
+.tile:hover b{color:var(--ac)}
+.tile small{color:#a6a6a6;font-size:.8rem}
+.pv{position:absolute;inset:0;display:grid;place-items:center}
+.pv+small{position:relative;margin-top:auto}
+
+/* published docs */
+#docs{background:#000;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:4vw;padding:6rem 6vw;--w:var(--ac);--t:var(--bg)}
+.stack{position:relative;width:min(320px,70%);aspect-ratio:3/4;margin:0 auto;cursor:pointer}
+.page{position:absolute;inset:0;padding:12%;border-radius:10px;background:#f2f2f4;color:var(--bg);box-shadow:0 20px 40px #000a;overflow:hidden;transition:transform .6s cubic-bezier(.2,.9,.2,1)}
+.page::after{content:'';position:absolute;left:12%;right:12%;top:40%;bottom:12%;background:repeating-linear-gradient(#0000 0 14px,#bcbcc4 14px 16px)}
+.page h4{font:400 2rem/1 var(--main)}.page p{font-size:.85rem;margin-top:.4rem}
+.page img{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover}
+.p2{background:#e2e2e7}.p3{background:#d3d3da}
+.stack:is(:hover,:focus-visible) .p1{transform:scale(.92)}
+.stack:is(:hover,:focus-visible) .p2{transform:translateX(-24%) rotate(-10deg) scale(.92)}
+.stack:is(:hover,:focus-visible) .p3{transform:translateX(24%) rotate(10deg) scale(.92)}
+#docs p.lead{margin:1.5rem 0 2rem;max-width:34rem;color:#a6a6a6;font-size:1.1rem}
+.btn{display:inline-block;padding:.8rem 1.8rem;border-radius:8px;background:var(--ac);color:var(--bg);font-weight:700;border:1px solid var(--ac);transition:background .25s,color .25s,transform .25s}
+.btn:hover{background:none;color:var(--ac);transform:translateY(-3px)}
+.btns{display:flex;flex-wrap:wrap;gap:1rem}
+.btn.ghost{background:none;color:var(--ac)}
+.btn.ghost:hover{background:var(--ac);color:var(--bg)}
+@media(max-width:800px){#features{height:80vh}#docs{grid-template-columns:1fr;padding:4rem 6vw}}
+/* footer */
+#footer{background:var(--ac);color:var(--bg);min-height:100vh;display:grid;grid-template-rows:1fr auto auto;gap:2.5rem;padding:5rem 6vw 2rem;--w:var(--bg);--t:var(--ac)}
+.ft-top{display:grid;grid-template-columns:1fr 1fr;gap:4vw}
+.sh{font:400 clamp(3rem,10vw,10rem)/1 var(--main);visibility:hidden;cursor:default}
+.sh.on{visibility:visible}
+.sh-w{display:inline-block;overflow:hidden;vertical-align:bottom;width:var(--cw);padding:.08em 0;margin:-.08em 0}
+.sh-i{display:flex;will-change:transform}
+.sh-i span{flex:none;width:var(--cw);text-align:center}
+.soc{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
+.soc a{width:3rem;height:3rem;display:grid;place-items:center;border-radius:50%;border:2px solid var(--bg);transition:background .25s,color .25s,transform .35s cubic-bezier(.2,1.4,.3,1)}
+.soc a:hover,.soc a:focus-visible{background:var(--bg);color:var(--ac);transform:translateY(-5px) rotate(-8deg)}
+.soc svg{width:1.3rem;height:1.3rem;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.soc svg.f{fill:currentColor;stroke:none}
+.links{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem 1.5rem;align-content:start}
+.links h5{font:700 .85rem var(--sec);opacity:.6;margin-bottom:.5rem}
+.links a{display:block;width:fit-content;font:400 .875rem/2 var(--sec);text-underline-offset:3px}
+.links a:hover,.links a:focus-visible{text-decoration:underline}
+.ft-msg{display:flex;justify-content:space-between;align-items:flex-end;gap:2rem;border-top:2px solid var(--bg);padding-top:1.5rem}
+#msg{max-width:48rem;font:500 clamp(1.1rem,1.8vw,1.6rem)/1.35 var(--sec)}
+.mw{display:inline-block;overflow:hidden;vertical-align:top}
+.mw span{display:inline-block;transform:translateY(115%);transition:transform .7s cubic-bezier(.2,.9,.2,1) calc(.7s + var(--i)*55ms)}
+.sig{display:flex;align-items:center;gap:.6rem;font-weight:700;white-space:nowrap;opacity:0;transition:opacity .8s 2.4s}
+.in .mw span{transform:none}.in .sig{opacity:1}
+.ft-bot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.9rem}
+.ft-bot img{height:1.4rem;vertical-align:middle;filter:brightness(0);margin-right:.5rem;transition:filter .45s}
+.ft-bot a:hover img,.ft-bot a:focus-visible img{filter:brightness(0) invert(1)}
+@media(max-width:800px){.ft-top{grid-template-columns:1fr}.links{grid-template-columns:repeat(2,1fr)}.ft-msg{flex-direction:column;align-items:flex-start}}
+@media(prefers-reduced-motion){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+
+<div id="loader"><h1 aria-label="KINEX">KINEX</h1></div>
+
+<header id="hero">
+  <a class="brand" href="#"><img src="logo.svg" alt=""><b>KINEX<i>.js</i></b></a>
+  <nav aria-label="Main">
+    <a href="#" style="--i:0"><span>Playground</span></a>
+    <a href="#how" style="--i:1"><span>Documentation</span></a>
+    <a href="category.html?c=all" style="--i:2"><span>Components</span></a>
+    <a href="#" style="--i:3"><span>About</span></a>
+  </nav>
+  <canvas id="iso" aria-hidden="true"></canvas>
+</header>
+
+<section id="how">
+  <div class="pin">
+    <h2 class="wipe">How to use</h2>
+    <h3 id="words"></h3>
+    <div class="cards">
+      <article class="card">
+        <header>Step 1: Copy the CDN link <button>Copy</button></header>
+        <pre>&lt;script src="https://cdn.jsdelivr.net/npm/kinex.js/dist/kinex.min.js"&gt;&lt;/script&gt;</pre>
+      </article>
+      <article class="card">
+        <header>Step 2: Use the component code <button>Copy</button></header>
+        <pre>&lt;div data-kinex="option-wheel"
+     data-items="Ambient,House,Techno"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+  Kinex.init();
+&lt;/script&gt;</pre>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="browse">
+  <div class="ow" id="wheel" role="listbox" tabindex="0" aria-label="Component categories"></div>
+  <div class="right">
+    <h2><span class="wipe">Browse</span><span class="wipe">Components</span></h2>
+    <p id="sel" aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="features">
+  <div class="gm" id="gm"></div>
+</section>
+
+<section id="docs">
+  <div class="stack" tabindex="0" aria-label="Documentation PDF preview">
+    <!-- To use your own page images, put <img src="..."> inside any .page -->
+    <div class="page p3"><img src="assets/more.png" alt=""></div>
+    <div class="page p2"><img src="assets/content.png" alt=""></div>
+    <div class="page p1"><img src="assets/cover.png" alt=""></div>
+  </div>
+  <div>
+    <h2><span class="wipe">Published</span><span class="wipe">Docs</span></h2>
+    <p class="lead">These are the written docs, published as PDF files alongside the Documentation page. They cover everything in more detail, so download them to read offline and keep them for later reference.</p>
+    <div class="btns"><a class="btn" href="docs/kinex-docs.pdf" download>Download PDF</a><a class="btn ghost" href="docs/kinex-docs.pdf" target="_blank" rel="noopener">Read Docs</a></div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="ft-top">
+    <div>
+      <div class="sh" id="shuffle" aria-label="KINEX">KINEX</div>
+      <div class="soc">
+        <a href="https://github.com/" aria-label="GitHub"><svg class="f" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <a href="https://x.com/" aria-label="X"><svg class="f" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="https://youtube.com/" aria-label="YouTube"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z"/></svg></a>
+        <a href="https://linkedin.com/" aria-label="LinkedIn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v5M8 8v.01M12 16v-5M12 13a2 2 0 0 1 4 0v3"/></svg></a>
+        <a href="https://instagram.com/" aria-label="Instagram"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5v.01"/></svg></a>
+      </div>
+    </div>
+    <nav class="links" id="links" aria-label="Footer"></nav>
+  </div>
+  <div class="ft-msg">
+    <p id="msg"></p>
+    <span class="sig">The KINEX team</span>
+  </div>
+  <div class="ft-bot">
+    <span>&copy; <span id="yr"></span> KINEX.js. All rights reserved.</span>
+    <a class="wipe" href="#"><img src="logo.svg" alt="">Back to top</a>
+  </div>
+</footer>
+
+<script src="registry.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+
+/* loader: fill letters left to right, then reveal */
+const L=$('#loader h1');L.innerHTML=[...'KINEX'].map(c=>`<span>${c}</span>`).join('');
+const start=()=>{
+  $$('#loader span').forEach((s,i)=>setTimeout(()=>s.classList.add('on'),400+i*380));
+  setTimeout(()=>{$('#loader').classList.add('done');document.body.classList.add('ready')},400+5*380+500);
+  setTimeout(()=>$('#loader').remove(),400+5*380+1600);
+};
+document.fonts.load('1em Neverquit').finally(start);
+
+/* hero: isometric wave of columns */
+const cv=$('#iso'),c=cv.getContext('2d'),still=matchMedia('(prefers-reduced-motion)').matches;let W,H,t=0;
+const size=()=>{const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;c.setTransform(d,0,0,d,0,0)};
+const poly=(p,f,s)=>{c.beginPath();p.forEach((q,i)=>c[i?'lineTo':'moveTo'](...q));c.closePath();c.fillStyle=f;c.fill();c.strokeStyle=s;c.stroke()};
+function draw(){
+  c.clearRect(0,0,W,H);const N=9,s=Math.min(W/19,H*.9/12.5),w=s*.9,hh=s*.45;
+  for(let k=0;k<2*N-1;k++)for(let i=0;i<N;i++){const j=k-i;if(j<0||j>=N)continue;
+    const x=W/2+(i-j)*s,y=H/2+(i+j-N+1)*s/2+s,
+      r=(Math.sin(t+(i+j)*.55)+Math.sin(t*.7+(i-j)*.5)+2)/4,h=s*.3+r*s*2.6,a='rgba(48,209,88,';
+    poly([[x-w,y-h],[x,y-h+hh],[x,y+hh],[x-w,y]],'#151519',a+'.25)');
+    poly([[x+w,y-h],[x,y-h+hh],[x,y+hh],[x+w,y]],'#0c0c0f',a+'.25)');
+    poly([[x,y-h-hh],[x+w,y-h],[x,y-h+hh],[x-w,y-h]],a+(.12+r*.88)+')',a+'.7)');
+  }
+  t+=.025;if(!still)requestAnimationFrame(draw)
+}
+addEventListener('resize',()=>{size();still&&draw()});size();draw();
+
+/* how to use: words reveal on scroll, copy buttons */
+$('#words').innerHTML='Apply in two simple steps'.split(' ').map(w=>`<span class="w wipe">${w}</span>`).join(' ');
+const how=$('#how'),ws=$$('.w');
+const reveal=()=>{const r=how.getBoundingClientRect(),p=-r.top/(how.offsetHeight-innerHeight);
+  ws.forEach((w,i)=>w.classList.toggle('show',i?p>i*.17:r.top<innerHeight*.4))};
+addEventListener('scroll',reveal,{passive:true});reveal();
+$$('.card button').forEach(b=>b.onclick=()=>{
+  navigator.clipboard.writeText(b.closest('.card').querySelector('pre').textContent);
+  b.textContent='Copied';setTimeout(()=>b.textContent='Copy',1500)});
+
+/* browse: option wheel (vanilla port of React Bits OptionWheel) */
+function Wheel(root,items,o){
+  const rowH=o.fs*o.sp*16,tr=o.tilt*Math.PI/180,R=rowH/tr,n=items.length;
+  let pos=o.def,tgt=o.def,sel=o.def,raf=0,last=0,drag,moved=0,wt;
+  const els=items.map((t,i)=>{const e=document.createElement('div');e.className='ow-item';e.setAttribute('role','option');e.textContent=t;
+    e.onclick=()=>{if(moved)return;set(i,1);setTimeout(()=>o.onOpen(i),380)};root.append(e);return e});
+  const frame=now=>{
+    const dt=Math.min((now-last)/1e3,.05);last=now;pos+=(tgt-pos)*(1-Math.exp(-dt/(o.tau/1e3)));
+    const done=Math.abs(tgt-pos)<.001;if(done)pos=tgt;
+    els.forEach((e,i)=>{const d=i-pos,ad=Math.abs(d),a=Math.max(-1.5708,Math.min(1.5708,d*tr));
+      e.style.transform=`translate(${-R*(1-Math.cos(a))}px,calc(${R*Math.sin(a)}px - 50%)) rotate(${a*57.2958}deg)`;
+      e.style.opacity=Math.max(o.min,1-ad*o.fade);e.style.filter=`blur(${ad*o.blur}px)`;
+      e.style.setProperty('--p',Math.max(0,1-Math.min(ad,1)))});
+    raf=done?0:requestAnimationFrame(frame)};
+  const set=(v,snap)=>{
+    v=Math.min(Math.max(v,0),n-1);if(snap)v=Math.round(v);tgt=v;const i=Math.round(v);
+    if(i!==sel){sel=i;mark();o.onChange(i,items[i])}
+    if(!raf){last=performance.now();raf=requestAnimationFrame(frame)}};
+  const mark=()=>els.forEach((e,j)=>{e.classList.toggle('sel',j===sel);e.setAttribute('aria-selected',j===sel)});
+  root.addEventListener('wheel',e=>{
+    const s=Math.max(-1,Math.min(1,(e.deltaMode?e.deltaY*24:e.deltaY)/rowH));
+    if((tgt<=0&&s<0)||(tgt>=n-1&&s>0))return; // at the ends, let the page scroll on
+    e.preventDefault();set(tgt+s);clearTimeout(wt);wt=setTimeout(()=>set(tgt,1),140)},{passive:false});
+  root.onpointerdown=e=>{drag={y:e.clientY,s:tgt,id:e.pointerId};moved=0;root.classList.add('drag')};
+  root.onpointermove=e=>{if(!drag)return;const dy=e.clientY-drag.y;
+    if(!moved&&Math.abs(dy)>4){moved=1;root.setPointerCapture(drag.id)}
+    if(moved)set(drag.s-dy/rowH)};
+  root.onpointerup=root.onpointercancel=()=>{if(!drag)return;drag=null;root.classList.remove('drag');
+    if(moved){set(tgt,1);setTimeout(()=>moved=0)}};
+  root.onkeydown=e=>{if(e.key==='Enter')return o.onOpen(sel);const d={ArrowUp:-1,ArrowLeft:-1,ArrowDown:1,ArrowRight:1}[e.key];
+    if(d){e.preventDefault();set(Math.round(tgt)+d,1)}};
+  mark();last=performance.now();raf=requestAnimationFrame(frame);
+}
+const cats=[['Buttons',14],['Cards',11],['Navigation',9],['Forms',16],['Text Effects',18],['Backgrounds',12],['Loaders',8],['Buttons',14],['Cards',11],['Navigation',9],['Forms',16],['Text Effects',18],['Backgrounds',12],['Loaders',8]];
+const show=i=>$('#sel').textContent=`${cats[i][1]} components in ${cats[i][0]}`;
+show(2);
+Wheel($('#wheel'),cats.map(x=>x[0]),{def:2,fs:3,sp:1.4,tilt:6,blur:2,fade:.25,min:.05,tau:200,onChange:show,onOpen:i=>location.href=`category.html?c=${cats[i][0].toLowerCase().replace(/\W+/g,'-')}`});
+
+/* features: grid motion (vanilla port of React Bits GridMotion) */
+// ADD YOUR OWN COMPONENTS HERE: {name, cat, href, preview (optional HTML or <img>)}
+// Featured grid: live previews of the registry's components (cards and buttons alternate). Each tile opens that component's customization page.
+const FEATURED=typeof COMPONENTS==='undefined'?[]:(()=>{
+  const E=Object.entries(COMPONENTS),by=k=>E.filter(([,c])=>c.cat===k),A=by('Cards'),B=by('Buttons'),mix=[];
+  for(let i=0;i<Math.max(A.length,B.length);i++){A[i]&&mix.push(A[i]);B[i]&&mix.push(B[i])}
+  return mix.map(([id,c])=>({name:c.name,cat:c.cat,href:kxPage(id),preview:c.html,css:c.css,on:c.on}));
+})();
+document.head.insertAdjacentHTML('beforeend','<style>'+FEATURED.map(f=>f.css).join('\n')+'\n.tile .pv>*{--kx-w:150px}</style>');
+const P={x:0,y:0,on:0},clamp=(v,a,b)=>Math.min(b,Math.max(a,v)),wrap=(v,t)=>(v%t+t)%t,
+  smooth=(a,b,v)=>{v=clamp((v-a)/(b-a),0,1);return v*v*(3-2*v)};
+addEventListener('pointermove',e=>{P.x=e.clientX;P.y=e.clientY;P.on=1},{passive:true});
+document.documentElement.addEventListener('pointerleave',()=>P.on=0);
+function GridMotion(root,items,{rows=4,asp=1.33,gap=16,angle=-12,speed=24,parallax=.5,spot=.6}={}){
+  const W=root.clientWidth,H=root.clientHeight,a=angle*Math.PI/180,cs=Math.abs(Math.cos(a)),sn=Math.abs(Math.sin(a)),
+    pH=(W*sn+H*cs)*1.12,pW=(W*cs+H*sn)*1.12,tH=(pH-gap*(rows-1))/rows,tW=tH*asp,step=tW+gap,
+    per=Math.ceil(pW/step)+1,period=per*step,copies=Math.ceil(pW/period)+2,top=(pH-rows*tH-(rows-1)*gap)/2,
+    pace=[1,.86,1.12,.94],inert=[.42,.32,.26,.22],reach=(.6+2.2*spot)*Math.max(tW,tH);
+  root.innerHTML=`<div class="gm-plane" style="width:${pW}px;height:${pH}px;transform:translate(-50%,-50%) rotate(${angle}deg);--tw:${tW}px;--th:${tH}px;--g:${gap}px;--f:${Math.max(14,tH*.13)}px">`+
+    Array.from({length:rows},(_,r)=>`<div class="gm-row" style="top:${top+r*(tH+gap)}px">`+
+      Array.from({length:copies*per},(_,k)=>{const it=items[(r*per+k%per)%items.length];
+        return `<a class="tile" data-i="${items.indexOf(it)}" href="${it.href}">${it.preview?`<div class="pv">${it.preview}</div>`:`<b>${it.name}</b>`}<small>${it.preview?it.name:it.cat}</small></a>`}).join('')+'</div>').join('')+'</div>';
+  const rowEls=[...root.firstChild.children],tl=rowEls.map(r=>[...r.children]),sp=tl.map(l=>new Float32Array(l.length)),
+    off=rowEls.map((_,r)=>r*step*.37),sh=rowEls.map(()=>0),still=matchMedia('(prefers-reduced-motion)').matches;
+  let raf=0,last=performance.now(),vis=true;
+  const frame=now=>{
+    raf=0;const dt=Math.min(.05,Math.max(.001,(now-last)/1e3));last=now;
+    const b=root.getBoundingClientRect(),px=P.x-b.left-W/2,py=P.y-b.top-H/2,inside=P.on&&Math.abs(px)<=W/2&&Math.abs(py)<=H/2,
+      pX=px*Math.cos(a)+py*Math.sin(a),pY=-px*Math.sin(a)+py*Math.cos(a),nudge=P.on?clamp(px/(W/2),-1,1):0,settle=1-Math.exp(-dt/.22);
+    rowEls.forEach((row,r)=>{
+      if(!still)off[r]+=speed*(r%2?1:-1)*pace[r%4]*dt;
+      sh[r]+=((still?0:parallax*tW*1.2*nudge*(r%2?-1:1))-sh[r])*(1-Math.exp(-dt/inert[r%4]));
+      const x=-period+wrap(off[r]+sh[r],period);row.style.transform=`translate3d(${x.toFixed(2)}px,0,0)`;
+      const rowY=top+r*(tH+gap)+tH/2-pH/2,left=x-pW/2+tW/2;
+      tl[r].forEach((e,k)=>{
+        const w=inside&&spot>0?1-smooth(.25,1,Math.hypot(left+k*step-pX,rowY-pY)/reach):0,v=sp[r][k]+=(w-sp[r][k])*settle;
+        if(v>.004||e._s){e._s=v>.004;e.style.setProperty('--s',v.toFixed(3))}})});
+    if(vis)raf=requestAnimationFrame(frame)};
+  const io=new IntersectionObserver(([e])=>{vis=e.isIntersecting;if(vis&&!raf){last=performance.now();raf=requestAnimationFrame(frame)}});
+  io.observe(root);raf=requestAnimationFrame(frame);
+  return()=>{vis=false;cancelAnimationFrame(raf);raf=0;io.disconnect()};
+}
+let stopGM,rt;const buildGM=()=>{stopGM?.();if(!FEATURED.length)return;stopGM=GridMotion($('#gm'),FEATURED);
+  $$('#gm .tile').forEach(t=>FEATURED[t.dataset.i].on?.(t.querySelector('.pv')?.firstElementChild))};
+addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(buildGM,200)});buildGM();
+
+/* footer: links, message, shuffle (vanilla port of React Bits Shuffle, slide effect) */
+const slug=t=>t.toLowerCase().replace(/\W+/g,'-');
+const FT={
+  Explore:[['Home','#'],['Playground','playground.html'],['Documentation','documentation.html'],['About','about.html']],
+  'On this page':[['How to use','#how'],['Browse Components','#browse'],['Featured Components','#features'],['Published Docs','#docs']],
+  Categories:['Buttons','Cards','Navigation','Forms','Text Effects','Backgrounds','Loaders'].map(t=>[t,`category.html?c=${slug(t)}`]),
+  Community:[['GitHub','https://github.com/'],['X','https://x.com/'],['YouTube','https://youtube.com/'],['LinkedIn','https://linkedin.com/']],
+  Legal:[['License','license.html'],['Privacy','privacy.html'],['Terms','terms.html']]};
+$('#links').innerHTML=Object.entries(FT).map(([h,l])=>`<div><h5>${h}</h5>${l.map(([t,u])=>`<a href="${u}">${t}</a>`).join('')}</div>`).join('');
+$('#yr').textContent=new Date().getFullYear();
+$('#msg').innerHTML='Thank you for building with us. Every component you ship makes the web feel a little more alive, so keep making things worth showing off. We will keep building the tools.'
+  .split(' ').map((w,i)=>`<span class="mw"><span style="--i:${i}">${w}</span></span>`).join(' ');
+
+function Shuffle(el,{rolls=3,dur=650,stagger=70,charset='KINEX'}={}){
+  const text=el.textContent,fs=parseFloat(getComputedStyle(el).fontSize),still=matchMedia('(prefers-reduced-motion)').matches;
+  el.textContent='';
+  const cells=[...text].map(ch=>{
+    const w=document.createElement('span'),m=document.createElement('span');m.textContent=ch;w.append(m);el.append(w);
+    w.className='sh-w';w.style.setProperty('--cw',m.getBoundingClientRect().width/fs+'em');
+    const i=document.createElement('span');i.className='sh-i';i.setAttribute('aria-hidden','true');
+    i.innerHTML=`<span>${ch}</span>`+'<span></span>'.repeat(rolls);w.replaceChildren(i);
+    return{i,f:[...i.children].slice(1)}});
+  let busy=0;
+  const run=()=>{
+    el.classList.add('on');if(busy||still)return;busy=1;const n=cells.length;
+    Promise.all(cells.map((c,k)=>{
+      c.f.forEach(s=>s.textContent=charset[Math.random()*charset.length|0]);
+      const order=k%2?(k-1)/2:(n>>1)+k/2; // odd letters first, then even
+      return c.i.animate([{transform:`translateX(${-100*rolls/(rolls+1)}%)`},{transform:'none'}],
+        {duration:dur,delay:order*stagger,easing:'cubic-bezier(.22,1,.36,1)',fill:'backwards'}).finished
+    })).then(()=>busy=0)};
+  el.classList.add('on');el.addEventListener('mouseenter',run);
+  return run;
+}
+document.fonts.load('1em Neverquit').finally(()=>{
+  const run=Shuffle($('#shuffle'));
+  new IntersectionObserver(([e],io)=>{if(e.isIntersecting){io.disconnect();$('#footer').classList.add('in');run()}},{threshold:.3}).observe($('#footer'));
+});
+</script>
+</body>
+</html>
