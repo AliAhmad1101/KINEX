@@ -27,9 +27,7 @@ main{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;align-content:sta
 .cell,.soon{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:1.4rem;padding:2.4rem 1.2rem 1rem;border:1px solid var(--ac)}
 .cell{transition:background .3s,box-shadow .3s;animation:up .6s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*90ms)}
 .cell:hover{background:#08110b;box-shadow:0 0 0 1px var(--ac),0 0 44px #30D15822}
-.cell::before,.cell::after{position:absolute;top:.8rem;font-size:.72rem;color:var(--ac)}
-.cell::before{counter-increment:c;content:counter(c,decimal-leading-zero);left:1rem}
-.cell::after{content:'Try me';right:1rem;padding-left:.9rem;background:radial-gradient(circle,var(--ac) 3px,transparent 4px) 0 50%/8px 8px no-repeat}
+.cell::before{position:absolute;top:.8rem;left:1rem;counter-increment:c;content:counter(c,decimal-leading-zero);font-size:.72rem;color:var(--ac)}
 .live{display:grid;place-items:center;min-height:238px}
 .cell .live>*{--kx-w:170px} /* previews are shown smaller than real size */
 .meta{display:flex;justify-content:space-between;align-items:center;gap:1rem;width:100%;padding-top:.8rem;border-top:1px solid #30D15833}
