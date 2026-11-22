@@ -1,7 +1,7 @@
 const COMPONENT={
  'develop-card':{name:'Instant Photo',hint:'Hover the print to develop it',desc:'A polaroid that slowly develops from washed-out grey into full colour.',cat:'Cards',featured:true,
   inner:'<div class="kx-dev-win"><!-- your photo or content --></div>\n  <p class="kx-dev-cap">summer, undeveloped</p>',
-  /* kinex.js: paste this css into the kinex.js stylesheet (no JS needed) */
+ 
   css:`/* kinex.js: paste this css */
 .kx-dev{--kx-w:300px;--kx-paper:#f7f3ea;--kx-ink:#2b2620;--kx-time:.9s;position:relative;display:inline-block;vertical-align:top;box-sizing:border-box;width:var(--kx-w);padding:.9rem .9rem 3.2rem;border-radius:5px;background:var(--kx-paper);color:var(--kx-ink);font-family:inherit;box-shadow:0 4px 8px #0002,0 22px 44px #0005;transform:rotate(-2deg);transition:transform .5s cubic-bezier(.2,.9,.3,1),box-shadow .5s;outline:none}
 .kx-dev:hover,.kx-dev:focus-visible{transform:rotate(-.4deg) translateY(-7px);box-shadow:0 8px 14px #0002,0 34px 62px #0006}
