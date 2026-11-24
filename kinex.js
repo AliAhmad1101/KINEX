@@ -1,6 +1,5 @@
 /*! KINEX.js v1.1.1 | MIT | Drop-in UI components for any website */
 /*
-  Usage: add this once, then use any component with a data-kinex attribute.
 
     <script src="https://cdn.jsdelivr.net/gh/KINEX-js/kinex.js-components@main/kinex.js"></script>
     <div data-kinex="tilt-card">Your content</div>
@@ -12,7 +11,6 @@
   Text:        liquid-text, press-text, print-text, flap-text, scramble-text, wave-text
   Navigation:  dock-nav, slide-nav, scroll-nav
   Forms:       float-field, otp-field, morph-check
-  Backgrounds: aurora-bg, spot-grid-bg, beam-bg
   Loaders:     arc-loader, dots-loader, skeleton-loader, ripple-loader
 
   Style any component with CSS variables, e.g. style="--kx-bg:#222;--kx-radius:12px".
