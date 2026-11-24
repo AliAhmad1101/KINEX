@@ -2,7 +2,7 @@
 /*
   Usage: add this once, then use any component with a data-kinex attribute.
 
-    <script src="https://cdn.jsdelivr.net/gh/YOUR_USER/kinex@1.1.1/kinex.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/KINEX-js/kinex.js-components@main/kinex.js"></script>
     <div data-kinex="tilt-card">Your content</div>
 
   Cards:       flip-card (put <div data-front> and <div data-back> inside), tilt-card, holo-card,
